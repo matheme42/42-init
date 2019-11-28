@@ -1,0 +1,63 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]
+then
+	echo "Renseignez un film"
+else
+	BASE=$(curl -s https://api.themoviedb.org/3/search/movie\?api_key\=f7cde45575c46dbabb91d9a8df200b67\&language\=fr-FR\&query\=$1\&page\=1\&include_adult\=false |  cut -d "}" -f1 | cut -d "{" -f3)
+	if [ -z  "$BASE" ]
+	then
+		echo "Film introuvable"
+	else
+		GENRE_BASE=$(curl -s https://api.themoviedb.org/3/genre/movie/list\?api_key\=f7cde45575c46dbabb91d9a8df200b67\&language\=fr-FR | cut -d "[" -f2 | cut -d "]" -f1 | sed 's/{/\\n/g')
+
+		TITLE=$(echo $BASE | cut -d '"' -f12)
+		ORIGINAL_TITLE=$(echo $BASE | cut -d '"' -f26)
+		ORIGINAL_LANGUAGE=$(echo $BASE | cut -d '"' -f22)
+		VOTE=$(echo $BASE | cut -d "," -f4 | cut -d ":" -f2)
+		VOTE_STAT=$(echo $BASE | cut -d "," -f1 | cut -d ":" -f2)
+		REALASE_DATE=$(echo $BASE | rev | cut -d "," -f1 | rev | cut -d '"' -f4)
+		OVERVIEW=$(echo $BASE | rev |  cut -d '"' -f6 | rev)
+		GENRE_ID=$(echo $BASE | cut -d '[' -f2 | cut -d ']' -f1)
+		GENRE1=$(echo $GENRE_ID | cut -d, -f1)
+		GENRE2=$(echo $GENRE_ID | cut -d, -f2)
+		GENRE3=$(echo $GENRE_ID | cut -d, -f3)
+		GENRE4=$(echo $GENRE_ID | cut -d, -f4)
+		GENRE5=$(echo $GENRE_ID | cut -d, -f5)
+		GENRE=$(echo "")
+		if [ ! -z $GENRE1 ]
+		then
+			GENRE1=$(echo $GENRE_BASE | grep $GENRE1 | cut -d'"' -f6)
+			GENRE=$(echo $GENRE$GENRE1)
+			echo $GENRE
+		fi
+		if [ ! -z $GENRE2 ]
+		then
+			GENRE2=$(echo $GENRE_BASE | grep $GENRE2 | cut -d'"' -f6)
+			GENRE=$(echo $GENRE $GENRE2)
+		fi
+		if [ ! -z $GENRE3 ]
+		then
+			GENRE3=$(echo $GENRE_BASE | grep $GENRE3 | cut -d'"' -f6)
+			GENRE=$(echo $GENRE $GENRE3)
+		fi
+		if [ ! -z $GENRE4 ]
+		then
+			GENRE4=$(echo $GENRE_BASE | grep $GENRE4 | cut -d'"' -f6)
+			GENRE=$(echo $GENRE $GENRE4)
+		fi
+		if  [ ! -z $GENRE5 ]
+		then
+			GENRE5=$(echo $GENRE_BASE | grep $GENRE5 | cut -d'"' -f6)
+			GENRE=$(echo $GENRE $GENRE5)
+		fi
+		echo "Titre:			"$TITLE
+		echo "Titre Original:		"$ORIGINAL_TITLE
+		echo "Langue Original:	"$ORIGINAL_LANGUAGE
+		echo "Vote:			"$VOTE/10
+		echo "Nombre de vote:		"$VOTE_STAT
+		echo "Date de sortie:		"$REALASE_DATE
+		echo "Genre:			"$GENRE
+		echo "Resumer:\n"$OVERVIEW
+	fi
+fi

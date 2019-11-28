@@ -1,0 +1,3 @@
+/etc/ssh/authorized_keys.pub
+
+* /.ssh/authorized_keys.pub

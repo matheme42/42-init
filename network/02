@@ -1,0 +1,6 @@
+echo 'a)'
+ifconfig en0 | grep 'broadcast' | cut -d ' ' -f6
+echo 'b)'
+VAR=$(ifconfig en0 | grep "broadcast" | cut -d ' ' -f6)
+IP=$(ping -c1 $VAR | grep "from" | cut -d ':' -f1 | cut -d ' ' -f4 | cut -d '.' -f 1-2)
+ping -c2 $VAR | grep -v 'statistics' | grep $IP | sed 1d | cut -d ':' -f1 | cut -d ' ' -f4

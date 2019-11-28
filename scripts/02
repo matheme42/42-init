@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ $# = 1 ]
+then
+	verif=$(cat /etc/passwd | grep "/bin/bash" | cut -d : -f1 | grep $1)
+	if [ $verif ]
+	then
+		sudo passwd -l --quiet $1
+		sudo userdel -rf $1
+	else
+		echo "Please select a valid user"
+		echo "Valid User :"
+		cat /etc/passwd | grep "/bin/bash" | cut -d : -f1 | grep -v "root"
+	fi
+else
+	echo "Please select a valid user"
+	echo "Valid User :"
+	cat /etc/passwd | grep "/bin/bash" | cut -d : -f1 | grep -v "root"
+fi
